@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+
+    <title>스파르타코딩클럽 | 부트스트랩 연습하기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Shadows Into Light', cursive;
+        }
+
+        .practice {
+            color: blue;
+
+        }
+
+        .card-title {
+            color: lightblue;
+        }
+
+        .form-group {
+            width: 400px;
+            margin: auto;
+
+            border: 1px solid;
+            border-radius: 30px;
+
+            padding: 30px;
+        }
+
+        .form-check {
+            width: 200px;
+            margin: auto;
+        }
+    </style>
+    <script>
+
+        $(document).ready(function () {
+            $('#cards-box').empty();
+            // savingFirst();
+            listing();
+        });
+
+        function savingFirst() {
+            $.ajax({
+                type: "POST",
+                url: "/memo/insert",
+                data: {},
+                success: function (response) {
+
+
+                }
+            })
+            window.location.reload();
+        }
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/memo",
+                data: {},
+                success: function (response) {
+                    //
+                    let rows = response['all_articles'];
+
+                    for (let i = 0; i < rows.length; i++) {
+                        let comment = rows[i]['comment'];
+                        let desc = rows[i]['desc'];
+                        let image = rows[i]['image'];
+                        let title = rows[i]['title'];
+                        let url = rows[i]['url'];
+                        let temp_html = `<div class="card">
+            <img class="card-img-top"
+                 src="${image}"
+                 alt="Card image cap">
+            <div class="card-body">
+                <a href="${url}" class="card-title">${title}</a>
+                <p class="card-text">${desc}</p>
+                <p class="practice"><b>${comment}</b></p>
+            </div>
+            <button onclick="deleteAndListing()">삭제</button>
+        </div>`;
+
+                        $('#cards-box').append(temp_html);
+                    }
+                }
+            })
+        }
+
+        function deleteAndListing(title) {
+            $.ajax({
+                type: "POST",
+                url: "/memo/delete",
+                data: {},
+                success: function (response) {
+                    alert(response['msg'])
+                }
+            })
+            window.location.reload();
+        }
+
+        function openclose() {
+            let status = $('#post-box').css('display');
+
+            if (status == 'block') {
+                $('#post-box').hide();
+                $('#btn-posting-box').text('포스팅 박스 열기');
+
+            } else {
+                $('#post-box').show();
+                $('#btn-posting-box').text('포스팅 박스 닫기');
+            }
+
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="wrap">
+    <div class="jumbotron">
+        <h1 class="display-4">나홀로 링크 메모장!</h1>
+        <p class="lead">중요한 링크를 저장해두고, 나중에 볼 수 있는 공간입니다</p>
+        <p class="lead">
+            <a onclick="openclose()" id="btn-posting-box" class="btn btn-primary btn-lg" href="#" role="button">포스팅 박스
+                열기</a>
+        </p>
+    </div>
+    <button onclick="savingFirst()" style="width:100px;height:100px;">카드추가</button>
+    <div class="posting-box" id="post-box">
+        <div class="form-group">
+            <div>
+                <label>아티클 URL</label>
+                <input type="email" class="form-control" id="articleURL" aria-describedby="emailHelp"
+                       placeholder="">
+            </div>
+            <div>
+
+                <label for="exampleFormControlTextarea1"> 간단 코멘트</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+
+            </div>
+            <p>
+            <div>
+                <button type="submit" class="btn btn-primary">기사 저장</button>
+            </div>
+            </p>
+        </div>
+    </div>
+
+    <div class="card-columns" id="cards-box">
+
+    </div>
+</div>
+
+</body>
+
+</html>
